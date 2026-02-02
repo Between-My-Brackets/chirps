@@ -1,7 +1,7 @@
 import express from "express";
 import {healthReadiness} from "./api/readiness.js";
 import {middlewareLogResponses} from "./middlewares/logging.js";
-import {adminGetMetrics, getMetrics, resetMetrics} from "./api/metrics.js";
+import {adminGetMetrics, adminResetMetrics, getMetrics, resetMetrics} from "./api/metrics.js";
 import {middlewareMetricsInc} from "./middlewares/metrics.js";
 
 const app = express();
@@ -12,7 +12,7 @@ app.use(middlewareLogResponses);
 
 app.get("/api/healthz", healthReadiness);
 app.get("/admin/metrics", adminGetMetrics);
-app.get("/admin/reset", resetMetrics);
+app.post("/admin/reset", adminResetMetrics);
 app.get("/api/metrics", getMetrics);
 app.get("/api/reset", resetMetrics);
 

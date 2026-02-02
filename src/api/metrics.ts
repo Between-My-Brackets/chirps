@@ -20,3 +20,8 @@ export function adminGetMetrics(req: Request, res: Response){
   </body>
 </html>`);
 }
+
+export function adminResetMetrics(req: Request, res: Response){
+    apiConfig.fileserversHits = 0;
+    res.status(200).send();
+}
