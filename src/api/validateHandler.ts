@@ -1,36 +1,32 @@
 import {Request, Response} from "express";
 
 export async function validateHandler(req: Request, res:Response){
-    try{
-        const {body} = req.body;
+    type parameters = {
+        body: string;
+    };
 
-        if(body === undefined){
-            res.status(400).json({
-                error: "Invalid request body is required"
-            });
-            return;
-        }
+    const params:parameters = req.body;
 
-        if(typeof body !== 'string'){
-            res.status(400).json({
-                error: "Invalid request body must be string"
-            });
-            return;
-        }
+    const maxChirpLength = 140;
 
-        if(body.length > 140){
-            res.status(400).json({
-                error:"Chirp is too long"
-            });
-            return;
-        }
-        res.status(200).json({valid : true})
-        return;
+    if(params.body.length > maxChirpLength){
+        throw new Error("Chirp is too long");
     }
-    catch (error){
-        res.status(500).json({
-            error: "Something went wrong"
-        });
-        return;
+
+    const words = params.body.split(" ");
+
+    const badWords = ["kerfuffle", "sharbert", "fornax"];
+    for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        const loweredWord = word.toLowerCase();
+        if (badWords.includes(loweredWord)) {
+            words[i] = "****";
+        }
     }
+
+    const cleaned = words.join(" ");
+
+    res.status(200).json({
+        cleanedBody: cleaned
+    });
 }
