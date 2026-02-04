@@ -1,4 +1,6 @@
 import {Request, Response} from "express";
+import {BadRequestError} from "../errors/badRequestError.js";
+
 
 export async function validateHandler(req: Request, res:Response){
     type parameters = {
@@ -9,8 +11,12 @@ export async function validateHandler(req: Request, res:Response){
 
     const maxChirpLength = 140;
 
+    if(params.body === undefined){
+        throw new BadRequestError("Invalid request, Body is required");
+    }
+
     if(params.body.length > maxChirpLength){
-        throw new Error("Chirp is too long");
+        throw new BadRequestError("Chirp is too long. Max length is 140")
     }
 
     const words = params.body.split(" ");
