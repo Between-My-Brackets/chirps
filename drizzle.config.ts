@@ -6,6 +6,6 @@ export default defineConfig({
     out: "drizzle",
     dialect: "postgresql",
     dbCredentials: {
-        url: "<connection_srting>",
+        url: "postgres://postgres:postgres@localhost:5432/chirpy?sslmode=disable",
     },
 });
