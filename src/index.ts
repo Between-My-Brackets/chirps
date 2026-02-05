@@ -2,7 +2,7 @@ import express from "express";
 import postgres from "postgres";
 import {migrate} from "drizzle-orm/postgres-js/migrator";
 import {drizzle} from "drizzle-orm/postgres-js";
-import {config} from "./config";
+import {config} from "./config.js";
 import {healthReadiness} from "./api/readiness.js";
 import {middlewareLogResponses} from "./middlewares/logging.js";
 import {handlerMetrics} from "./api/metrics.js";
@@ -10,6 +10,7 @@ import {handlerReset} from "./api/reset.js";
 import {middlewareMetricsInc} from "./middlewares/metrics.js";
 import {validateHandler} from "./api/validateHandler.js";
 import {errorHandler} from "./middlewares/errorHandling.js";
+import {createUserController} from "./api/users.js";
 
 const migrationClient = postgres(config.db.url, { max: 1});
 await migrate(drizzle(migrationClient), config.db.migrationConfig);
@@ -23,11 +24,12 @@ app.use(express.json());
 app.use("/app",middlewareMetricsInc, express.static("src/app"));
 
 app.get("/api/healthz", healthReadiness);
+app.post("/api/users", createUserController);
 app.get("/admin/metrics", (req, res, next) => {
     Promise.resolve(handlerMetrics(req, res).catch(next))
 });
 
-app.get("/admin/reset", (req, res, next) => {
+app.post("/admin/reset", (req, res, next) => {
     Promise.resolve(handlerReset(req, res).catch(next))
 });
 
