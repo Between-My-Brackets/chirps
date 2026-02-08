@@ -8,7 +8,7 @@ import {middlewareLogResponses} from "./middlewares/logging.js";
 import {handlerMetrics} from "./api/metrics.js";
 import {handlerReset} from "./api/reset.js";
 import {middlewareMetricsInc} from "./middlewares/metrics.js";
-import {createChirpController, getChirpsController} from "./api/chirpHandler.js"; // Corrected import
+import {createChirpController, getChirpByIdController, getChirpsController} from "./api/chirpHandler.js"; // Corrected import
 import {errorHandler} from "./middlewares/errorHandling.js";
 import {createUserController} from "./api/users.js";
 
@@ -45,6 +45,15 @@ app.post("/api/chirps", async(req, res, next) => {
 app.get("/api/chirps", async(req, res, next) => {
     try{
         await getChirpsController(req, res);
+    }
+    catch(err){
+        next(err);
+    }
+})
+
+app.get("/api/chirps/:chirpId", async (req, res, next) => {
+    try{
+        await getChirpByIdController(req, res);
     }
     catch(err){
         next(err);
