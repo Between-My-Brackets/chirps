@@ -8,7 +8,7 @@ import {middlewareLogResponses} from "./middlewares/logging.js";
 import {handlerMetrics} from "./api/metrics.js";
 import {handlerReset} from "./api/reset.js";
 import {middlewareMetricsInc} from "./middlewares/metrics.js";
-import {validateHandler} from "./api/validateHandler.js";
+import {createChirpController} from "./api/chirpHandler.js"; // Corrected import
 import {errorHandler} from "./middlewares/errorHandling.js";
 import {createUserController} from "./api/users.js";
 
@@ -33,13 +33,14 @@ app.post("/admin/reset", (req, res, next) => {
     Promise.resolve(handlerReset(req, res).catch(next))
 });
 
-app.post("/api/validate_chirp", async(req, res, next) => {
+app.post("/api/chirps", async(req, res, next) => {
     try{
-        await validateHandler(req,res);
-    }catch (err){
+        await createChirpController(req, res); // Corrected function call
+    }
+    catch(err){
         next(err);
     }
-});
+})
 
 app.use(errorHandler);
 
