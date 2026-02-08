@@ -15,6 +15,20 @@
       "when": 1770517594546,
       "tag": "0001_shallow_anita_blake",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1770535633628,
+      "tag": "0002_normal_butterfly",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1770537183999,
+      "tag": "0003_new_penance",
+      "breakpoints": true
     }
   ]
 }

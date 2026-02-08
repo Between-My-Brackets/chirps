@@ -11,6 +11,7 @@ import {middlewareMetricsInc} from "./middlewares/metrics.js";
 import {createChirpController, getChirpByIdController, getChirpsController} from "./api/chirpHandler.js"; // Corrected import
 import {errorHandler} from "./middlewares/errorHandling.js";
 import {createUserController} from "./api/users.js";
+import {loginController} from "./api/login.js";
 
 const migrationClient = postgres(config.db.url, { max: 1});
 await migrate(drizzle(migrationClient), config.db.migrationConfig);
@@ -25,6 +26,7 @@ app.use("/app",middlewareMetricsInc, express.static("src/app"));
 
 app.get("/api/healthz", healthReadiness);
 app.post("/api/users", createUserController);
+app.post("/api/login", loginController);
 app.get("/admin/metrics", (req, res, next) => {
     Promise.resolve(handlerMetrics(req, res).catch(next))
 });

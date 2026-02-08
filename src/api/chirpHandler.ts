@@ -2,7 +2,7 @@ import {Request, Response} from "express";
 import {BadRequestError} from "../errors/badRequestError.js";
 import { db } from "../db/index.js"
 import {chirps, NewChirp} from "../db/schema.js";
-import {getAllChirps, getChirpById} from "../db/queries/chirps.js";
+import {getAllChirps, getChirpById} from "../db/queries/chirps.queries.js";
 
 export async function createChirpController(req: Request, res:Response){
     interface createChirpRequestBody{
