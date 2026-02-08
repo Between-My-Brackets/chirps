@@ -2,6 +2,7 @@ import {Request, Response} from "express";
 import {BadRequestError} from "../errors/badRequestError.js";
 import { db } from "../db/index.js"
 import {chirps, NewChirp} from "../db/schema.js";
+import {getAllChirps} from "../db/queries/chirps.js";
 
 export async function createChirpController(req: Request, res:Response){
     interface createChirpRequestBody{
@@ -37,10 +38,10 @@ export async function createChirpController(req: Request, res:Response){
         }
     }
 
-    const cleaned = words.join(" ");
+    const cleanedBody = words.join(" ");
 
     const newChirpData: NewChirp = {
-        body: cleaned,
+        body: cleanedBody,
         userId: userId,
     }
 
@@ -57,4 +58,18 @@ export async function createChirpController(req: Request, res:Response){
         body: createdChirp.body,
         userId: createdChirp.userId
     });
+}
+
+export async function getChirpsController(req: Request, res: Response){
+    const chirps = await getAllChirps();
+
+    const formattedChirps = chirps.map(chirp => ({
+        id: chirp.id,
+        createdAt: chirp.createdAt,
+        updatedAt: chirp.updatedAt,
+        body: chirp.body,
+        userId: chirp.userId,
+    }));
+
+    res.status(200).json(formattedChirps);
 }
