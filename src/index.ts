@@ -13,8 +13,8 @@ import {errorHandler} from "./middlewares/errorHandling.js";
 import {createUserController} from "./api/users.js";
 import {loginController} from "./api/login.js";
 
-const migrationClient = postgres(config.db.url, { max: 1});
-await migrate(drizzle(migrationClient), config.db.migrationConfig);
+// const migrationClient = postgres(config.db.url, { max: 1});
+// await migrate(drizzle(migrationClient), config.db.migrationConfig);
 
 const app = express();
 const PORT = 8080;

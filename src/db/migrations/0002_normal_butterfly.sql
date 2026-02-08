@@ -1,1 +1,0 @@
-ALTER TABLE "users" ADD COLUMN "hashedPassword" varchar(256) DEFAULT 'unset' NOT NULL;

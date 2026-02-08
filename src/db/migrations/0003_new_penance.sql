@@ -1,1 +1,0 @@
-ALTER TABLE "users" RENAME COLUMN "hashedPassword" TO "hashed_password";

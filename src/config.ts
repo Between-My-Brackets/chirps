@@ -1,5 +1,7 @@
 import {MigrationConfig} from "drizzle-orm/migrator";
+import 'dotenv/config';
 process.loadEnvFile();
+
 
 function envOrThrow(key: string): string{
     const value = process.env[key];
@@ -18,6 +20,10 @@ type APIConfig = {
     fileServerHits: number;
     db: DBConfig;
     platform: string;
+    jwt: {
+        secret: string;
+        tokenExpiresInSeconds: number;
+    };
 };
 
 export const config: APIConfig = {
@@ -26,7 +32,13 @@ export const config: APIConfig = {
         url: envOrThrow("DB_URL"),
         migrationConfig: {
             migrationsFolder: "./src/db/migrations",
+            migrationsSchema: "drizzle",
+            migrationsTable: "migrations"
         },
+    },
+    jwt: {
+        secret: process.env.JWT_SECRET as string,
+        tokenExpiresInSeconds: 3600,
     },
     platform: envOrThrow("PLATFORM")
 };
