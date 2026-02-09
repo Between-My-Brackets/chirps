@@ -1,5 +1,7 @@
-import { pgTable, timestamp, varchar, uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, varchar, uuid } from "drizzle-orm/pg-core";
 import {relations} from "drizzle-orm";
+import {createInsertSchema, createSelectSchema} from "drizzle-zod";
+
 
 export const users = pgTable("users", {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -85,3 +87,44 @@ export type NewChirp = typeof chirps.$inferInsert;
 // BEFORE UPDATE ON chirps
 // FOR EACH ROW
 // EXECUTE FUNCTION update_updated_at_column();
+
+
+export const refreshTokens = pgTable("refresh_tokens", {
+    token: text("token").primaryKey(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    userId: uuid("user_id")
+        .notNull()
+        .references(() => users.id, {onDelete: "cascade"}),
+    expiresAt: timestamp("expires_at").notNull(),
+    revokedAt: timestamp("revoked_at"),
+});
+
+
+export const refreshTokensRelations = relations(refreshTokens, ({ one }) => ({
+    user: one(users, {
+        fields: [refreshTokens.userId],
+        references: [users.id],
+    })
+}))
+
+
+export const selectRefreshTokenSchema = createSelectSchema(refreshTokens);
+export const insertRefreshTokenSchema = createInsertSchema(refreshTokens);
+
+// CREATE TABLE IF NOT EXISTS "refresh_tokens" (
+//     "token" text PRIMARY KEY NOT NULL,
+//     "created_at" timestamp DEFAULT now() NOT NULL,
+//     "updated_at" timestamp DEFAULT now() NOT NULL,
+//     "user_id" varchar,
+//     "expires_at" timestamp NOT NULL,
+//     "revoked_at" timestamp
+// );
+
+// DO $$ BEGIN
+// ALTER TABLE "refresh_tokens" ADD CONSTRAINT "refresh_tokens_user_id_users_id_fk"
+// FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON
+// UPDATE no action;
+// EXCEPTION
+// WHEN duplicate_object THEN null;
+// END $$;

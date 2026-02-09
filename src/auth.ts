@@ -1,16 +1,20 @@
 import argon2 from "argon2";
 import jwt, {JwtPayload} from "jsonwebtoken";
 import {Request} from "express";
+import crypto from "crypto";
 
 export async function hashPassword(password: string){
     return argon2.hash(password)
 }
 
+
 export async function checkPasswordHash(password:string, hash: string){
     return argon2.verify(hash, password);
 }
 
+
 type payload = Pick<JwtPayload, "iss" | "sub" | "iat" | "exp">;
+
 
 export function makeJWT(userID: string, expiresIn:number, secret: string): string {
     const iat = Math.floor(Date.now() / 1000);
@@ -23,6 +27,7 @@ export function makeJWT(userID: string, expiresIn:number, secret: string): strin
     return jwt.sign(jwtPayload, secret);
 }
 
+
 export function validateJWT(tokenString: string, secret:string): string {
     const decode = jwt.verify(tokenString, secret) as payload;
     if(typeof decode.sub !== "string"){
@@ -30,6 +35,7 @@ export function validateJWT(tokenString: string, secret:string): string {
     }
     return decode.sub;
 }
+
 
 export function getBearerToken(req: Request): string {
     const authHeader = req.get("Authorization");
@@ -41,4 +47,9 @@ export function getBearerToken(req: Request): string {
         throw new Error("Invalid Authorization header format. Expected 'Bearer TOKEN'.");
     }
     return token;
+}
+
+
+export function makeRefreshToken() {
+    return crypto.randomBytes(32).toString("hex");
 }

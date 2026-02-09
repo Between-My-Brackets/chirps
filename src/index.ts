@@ -1,8 +1,8 @@
 import express from "express";
-import postgres from "postgres";
-import {migrate} from "drizzle-orm/postgres-js/migrator";
-import {drizzle} from "drizzle-orm/postgres-js";
-import {config} from "./config.js";
+// import postgres from "postgres";
+// import {migrate} from "drizzle-orm/postgres-js/migrator";
+// import {drizzle} from "drizzle-orm/postgres-js";
+// import {config} from "./config.js";
 import {healthReadiness} from "./api/readiness.js";
 import {middlewareLogResponses} from "./middlewares/logging.js";
 import {handlerMetrics} from "./api/metrics.js";
@@ -12,6 +12,8 @@ import {createChirpController, getChirpByIdController, getChirpsController} from
 import {errorHandler} from "./middlewares/errorHandling.js";
 import {createUserController} from "./api/users.js";
 import {loginController} from "./api/login.js";
+import {refreshController} from "./api/refresh.js";
+import {revokeController} from "./api/revoke.js";
 
 // const migrationClient = postgres(config.db.url, { max: 1});
 // await migrate(drizzle(migrationClient), config.db.migrationConfig);
@@ -24,9 +26,14 @@ app.use(express.json());
 
 app.use("/app",middlewareMetricsInc, express.static("src/app"));
 
+//==========api routes===========
 app.get("/api/healthz", healthReadiness);
 app.post("/api/users", createUserController);
 app.post("/api/login", loginController);
+app.post("/api/refresh", refreshController);
+app.post("/api/revoke", revokeController);
+
+//==========admin routes============
 app.get("/admin/metrics", (req, res, next) => {
     Promise.resolve(handlerMetrics(req, res).catch(next))
 });
@@ -35,6 +42,7 @@ app.post("/admin/reset", (req, res, next) => {
     Promise.resolve(handlerReset(req, res).catch(next))
 });
 
+//=========chirp routes===========
 app.post("/api/chirps", async(req, res, next) => {
     try{
         await createChirpController(req, res); // Corrected function call
@@ -61,7 +69,7 @@ app.get("/api/chirps/:chirpId", async (req, res, next) => {
         next(err);
     }
 })
-
+//=====================================================
 app.use(errorHandler);
 
 
