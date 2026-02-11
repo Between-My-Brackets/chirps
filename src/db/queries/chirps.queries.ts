@@ -1,6 +1,6 @@
 import {db} from "../index.js";
-import {chirps} from "../schema.js";
-import {asc, eq} from "drizzle-orm";
+import {chirps, users} from "../schema.js";
+import {asc, eq, and} from "drizzle-orm";
 
 export async function getAllChirps(){
     const allChirps = await db
@@ -24,4 +24,13 @@ export async function getChirpById(chirpId: string){
         .where(eq(chirps.id, chirpId))
         .limit(1);
     return chirp;
+}
+
+
+export async function deleteChirpByIdAndAuthor(chirpId: string, authorId: string) {
+    const [deleteChirp] = await db
+        .delete(chirps)
+        .where(and(eq(chirps.userId, authorId), eq(chirps.id, chirpId)))
+        .returning();
+    return deleteChirp;
 }
