@@ -3,6 +3,8 @@ import {NewUser, users} from "../db/schema.js";
 import {createUser} from "../db/queries/users.queries.js";
 import {hashPassword} from "../auth.js";
 import {Omit} from "utility-types";
+import { updateUserById } from "../db/queries/users.queries.js";
+import { BadRequestError } from "../errors/badRequestError.js";
 
 type createUserRequestBody = {
     email: string;
@@ -10,6 +12,11 @@ type createUserRequestBody = {
 };
 
 type UserResponse = Omit<typeof users.$inferSelect, "hashed_password">;
+
+type updateUserRequestBody = {
+    email?: string;
+    password?: string
+};
 
 
 
@@ -45,5 +52,43 @@ export async function createUserController(req: Request, res: Response){
     catch(err){
         console.error("Error creating the user: ",err);
         res.status(500).send("Internal server error.");
+    }
+}
+
+export async function updateUserController(req: Request, res: Response) {
+    if(!req.user || !req.user.id){
+        throw new Error("user not authenticated");
+    }
+
+    const {email, password} = req.body as updateUserRequestBody;
+    const userId = req.user.id;
+
+    if(!email || !password){
+        throw new BadRequestError("both email and password are required to update the user information");
+    }
+
+    try{
+        const updatePasswordHash = await hashPassword(password);
+        const updatedUser = await updateUserById(
+            userId,
+            email,
+            updatePasswordHash
+        );
+
+        if (updatedUser) {
+            const userResponse: UserResponse = {
+                id: updatedUser.id,
+                createdAt: updatedUser.createdAt,
+                updatedAt: updatedUser.updatedAt,
+                email: updatedUser.email
+            };
+            res.status(200).json(userResponse); // Corrected this line
+        } else {
+            throw new Error("User not found after update attempt.");
+        }
+    }
+    catch (err) {
+        console.error("Error updating user in updateUserController: ", err);
+        throw err;
     }
 }

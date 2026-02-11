@@ -14,6 +14,8 @@ import {createUserController} from "./api/users.js";
 import {loginController} from "./api/login.js";
 import {refreshController} from "./api/refresh.js";
 import {revokeController} from "./api/revoke.js";
+import {updateUserController} from "./api/users.js";
+import {authenticate} from "./middlewares/auth.js";
 
 // const migrationClient = postgres(config.db.url, { max: 1});
 // await migrate(drizzle(migrationClient), config.db.migrationConfig);
@@ -29,6 +31,7 @@ app.use("/app",middlewareMetricsInc, express.static("src/app"));
 //==========api routes===========
 app.get("/api/healthz", healthReadiness);
 app.post("/api/users", createUserController);
+app.put("/api/users", authenticate, updateUserController);
 app.post("/api/login", loginController);
 app.post("/api/refresh", refreshController);
 app.post("/api/revoke", revokeController);
@@ -43,7 +46,7 @@ app.post("/admin/reset", (req, res, next) => {
 });
 
 //=========chirp routes===========
-app.post("/api/chirps", async(req, res, next) => {
+app.post("/api/chirps", authenticate, async(req, res, next) => {
     try{
         await createChirpController(req, res); // Corrected function call
     }
@@ -52,7 +55,7 @@ app.post("/api/chirps", async(req, res, next) => {
     }
 })
 
-app.get("/api/chirps", async(req, res, next) => {
+app.get("/api/chirps", authenticate, async(req, res, next) => {
     try{
         await getChirpsController(req, res);
     }
@@ -61,7 +64,7 @@ app.get("/api/chirps", async(req, res, next) => {
     }
 })
 
-app.get("/api/chirps/:chirpId", async (req, res, next) => {
+app.get("/api/chirps/:chirpId", authenticate, async (req, res, next) => {
     try{
         await getChirpByIdController(req, res);
     }
