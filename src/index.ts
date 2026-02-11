@@ -8,13 +8,12 @@ import {middlewareLogResponses} from "./middlewares/logging.js";
 import {handlerMetrics} from "./api/metrics.js";
 import {handlerReset} from "./api/reset.js";
 import {middlewareMetricsInc} from "./middlewares/metrics.js";
-import {createChirpController, getChirpByIdController, getChirpsController} from "./api/chirpHandler.js"; // Corrected import
+import {createChirpController, getChirpByIdController, getChirpsController, deleteChirpController} from "./api/chirpHandler.js"; // Corrected import
 import {errorHandler} from "./middlewares/errorHandling.js";
-import {createUserController} from "./api/users.js";
+import {createUserController, updateUserController} from "./api/users.js";
 import {loginController} from "./api/login.js";
 import {refreshController} from "./api/refresh.js";
 import {revokeController} from "./api/revoke.js";
-import {updateUserController} from "./api/users.js";
 import {authenticate} from "./middlewares/auth.js";
 
 // const migrationClient = postgres(config.db.url, { max: 1});
@@ -55,7 +54,7 @@ app.post("/api/chirps", authenticate, async(req, res, next) => {
     }
 })
 
-app.get("/api/chirps", authenticate, async(req, res, next) => {
+app.get("/api/chirps", async(req, res, next) => { // REMOVED 'authenticate' MIDDLEWARE
     try{
         await getChirpsController(req, res);
     }
@@ -64,11 +63,19 @@ app.get("/api/chirps", authenticate, async(req, res, next) => {
     }
 })
 
-app.get("/api/chirps/:chirpId", authenticate, async (req, res, next) => {
+app.get("/api/chirps/:chirpId", async (req, res, next) => { // REMOVED 'authenticate' MIDDLEWARE
     try{
         await getChirpByIdController(req, res);
     }
     catch(err){
+        next(err);
+    }
+})
+
+app.delete("/api/chirps/:chirpId", authenticate, async(req, res, next) => { // ADDED LEADING SLASH
+    try{
+        await deleteChirpController(req, res);
+    }catch(err){
         next(err);
     }
 })
