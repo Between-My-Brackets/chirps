@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+/* ── MongoDB-inspired theme tokens ── */
+@theme {
+  --color-mongo-black: #001e2b;
+  --color-mongo-dark: #023430;
+  --color-mongo-panel: #112733;
+  --color-mongo-green: #00ed64;
+  --color-mongo-green-dark: #00684a;
+  --color-mongo-white: #f9fbfa;
+  --color-mongo-gray: #b8c4c2;
+  --color-mongo-border: #1c3a40;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ── Base overrides ── */
+body {
+  min-height: 100vh;
+}
+
+::selection {
+  background-color: var(--color-mongo-green);
+  color: var(--color-mongo-black);
+}
