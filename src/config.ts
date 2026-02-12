@@ -24,6 +24,7 @@ type APIConfig = {
         secret: string;
         tokenExpiresInSeconds: number;
     };
+    polkaKey: string;
 };
 
 export const config: APIConfig = {
@@ -40,5 +41,6 @@ export const config: APIConfig = {
         secret: process.env.JWT_SECRET as string,
         tokenExpiresInSeconds: 3600,
     },
-    platform: envOrThrow("PLATFORM")
+    platform: envOrThrow("PLATFORM"),
+    polkaKey: envOrThrow("POLKA_KEY")
 };

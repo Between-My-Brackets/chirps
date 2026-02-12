@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { upgradeUserToChirpyRed } from "../db/queries/users.queries.js";
 import { NotFoundError } from "../errors/notFoundError.js";
+import { getAPIKey } from "../auth.js";
+import { config } from "../config.js";
 
 interface PolkaWebhookEvent {
     event: string;
@@ -10,6 +12,21 @@ interface PolkaWebhookEvent {
 }
 
 export async function polkaWebhookController(req: Request, res: Response, next: NextFunction){
+
+    try{
+        const apiKey = getAPIKey(req);
+        if(apiKey !== config.polkaKey){
+            return res.status(401).send("Unauthorized: Invalid API Key");
+
+        }
+    }
+    catch(err){
+        if(err instanceof Error){
+            return res.status(401).send(`Unauthorized: ${err.message}`);
+        }
+        return res.status(401).send("Unauthorized: Invalid API key format")
+    }
+
     const {event, data} = req.body as PolkaWebhookEvent;
 
     if(event !== "user.upgraded") {
