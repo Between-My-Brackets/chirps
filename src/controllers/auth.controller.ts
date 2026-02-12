@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { getUserByEmail } from "../db/queries/users.queries.js";
-import { checkPasswordHash, makeJWT, makeRefreshToken, getBearerToken } from "../auth.js";
+import { checkPasswordHash, makeJWT, makeRefreshToken, getBearerToken } from "../utils/auth.utils.js";
 import { Omit } from "utility-types";
 import { users } from "../db/schema.js";
 import { config } from "../config.js";

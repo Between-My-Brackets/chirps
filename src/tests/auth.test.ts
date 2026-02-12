@@ -1,5 +1,5 @@
 import {describe, it, expect, beforeAll} from "vitest";
-import {makeJWT, validateJWT, hashPassword, checkPasswordHash, getBearerToken} from "../auth.js";
+import {makeJWT, validateJWT, hashPassword, checkPasswordHash, getBearerToken} from "../utils/auth.utils.js";
 import {Request} from "express";
 
 describe("Password Hashing", ()=> {

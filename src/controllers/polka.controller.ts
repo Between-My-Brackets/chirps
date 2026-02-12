@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { upgradeUserToChirpyRed } from "../db/queries/users.queries.js";
 import { NotFoundError } from "../errors/notFoundError.js";
-import { getAPIKey } from "../auth.js";
+import { getAPIKey } from "../utils/auth.utils.js";
 import { config } from "../config.js";
 
 interface PolkaWebhookEvent {

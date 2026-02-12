@@ -6,7 +6,7 @@ import { CustomError } from "../errors/customErrors.js";
 import { db } from "../db/index.js"
 import {chirps, NewChirp} from "../db/schema.js";
 import {getAllChirps, getChirpById, deleteChirpByIdAndAuthor} from "../db/queries/chirps.queries.js";
-import {getBearerToken, validateJWT} from "../auth.js";
+import {getBearerToken, validateJWT} from "../utils/auth.utils.js";
 import {config} from "../config.js";
 
 type CreateChripRequestBody = {

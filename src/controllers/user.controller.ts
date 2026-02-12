@@ -1,9 +1,8 @@
 import {Request, Response} from "express";
 import {NewUser, users} from "../db/schema.js";
-import {createUser} from "../db/queries/users.queries.js";
-import {hashPassword} from "../auth.js";
+import {createUser, updateUserById} from "../db/queries/users.queries.js";
+import {hashPassword} from "../utils/auth.utils.js";
 import {Omit} from "utility-types";
-import { updateUserById } from "../db/queries/users.queries.js";
 import { BadRequestError } from "../errors/badRequestError.js";
 
 type createUserRequestBody = {

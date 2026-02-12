@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { validateJWT, getBearerToken } from "../auth.js";
+import { validateJWT, getBearerToken } from "../utils/auth.utils.js";
 import { config } from "../config.js";
 import { UnauthorizedError } from "../errors/unauthorizedError.js";
 
