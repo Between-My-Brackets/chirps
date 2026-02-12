@@ -1,132 +1,110 @@
-# Chirpy API
+# Chirpy
 
-Chirpy is a scalable backend API for a microblogging platform, similar to Twitter(vaguely). It is built with Node.js, Express, and TypeScript, providing a clean and modern foundation for a social media application. This project serves as a practical example of building a well-structured RESTful API using professional coding practices and a modern tech stack.
+Chirpy is a scalable backend API for a microblogging platform, built with **Node.js**, **Express**, and **TypeScript**. It includes a developer-facing frontend that documents the API surface, architecture, and system health.
 
-## File Structure
-
-This project follows a standard, feature-rich file structure designed for scalability and maintainability.
+## Repository Structure
 
 ```
-.
-├── src/
-│   ├── controllers/    # Contains the core business logic for each endpoint.
-│   │   ├── admin.controller.ts
-│   │   ├── auth.controller.ts
-│   │   ├── chirp.controller.ts
-│   │   ├── health.controller.ts
-│   │   └── user.controller.ts
-│   │
-│   ├── db/             # Database configuration, schema, and migrations.
-│   │   ├── migrations/
-│   │   └── ...
-│   │
-│   ├── middlewares/    # Express middleware for logging, auth, errors, etc.
-│   │   └── ...
-│   │
-│   ├── routes/         # Defines all API routes and connects them to controllers.
-│   │   ├── admin.routes.ts
-│   │   ├── api.routes.ts       (Main router)
-│   │   ├── auth.routes.ts
-│   │   ├── chirp.routes.ts
-│   │   └── user.routes.ts
-│   │
-│   ├── utils/          # Reusable utility functions.
-│   │   └── response.utils.ts
-│   │
-│   └── index.ts        # Main application entry point.
-│
-├── openapi.yaml        # Centralized OpenAPI/Swagger documentation.
-├── package.json
-└── tsconfig.json
+root/
+├── backend/     # Express API (Node.js + TypeScript + PostgreSQL)
+├── frontend/    # Developer portal (React + Vite + Tailwind CSS)
+├── README.md
+└── .gitignore
 ```
 
-## 🚀 Installation and Setup
+---
 
-Follow these steps to get the Chirpy API running on your local machine.
+## 🚀 Getting Started
 
-### 1. Prerequisites
+### Prerequisites
 
--   [Node.js](https://nodejs.org/) (v18 or higher recommended)
--   [PostgreSQL](https://www.postgresql.org/) (a running instance)
+- [Node.js](https://nodejs.org/) v18+
+- [PostgreSQL](https://www.postgresql.org/) (running instance)
 
-### 2. Clone the Repository
+### Backend
 
 ```bash
-git clone <repository-url>
-cd chirpy
-```
-
-### 3. Install Dependencies
-
-Install all the required npm packages.
-
-```bash
+cd backend
 npm install
 ```
 
-### 4. Database Setup
+Create a `.env` file (see `.env.example` or the section below):
 
-This project uses PostgreSQL as its database.
+```
+DB_URL="postgres://user:password@localhost:5432/chirpy?sslmode=disable"
+JWT_SECRET="your-secret"
+POLKA_KEY="your-polka-key"
+PLATFORM="dev"
+```
 
-1.  Make sure you have a running PostgreSQL server.
-2.  Create a new database for the project (e.g., `chirpy_dev`).
-3.  Create a `.env` file in the root of the project by copying the example:
-
-    ```bash
-    cp .env.example .env
-    ```
-
-4.  Edit the `.env` file and update the `DB_URL` with your PostgreSQL connection string. You should also set your own `JWT_SECRET`.
-
-    ```
-    # PostgreSQL connection URL
-    DB_URL="postgresql://<user>:<password>@<host>:<port>/<database>"
-
-    # Secret for signing JWTs
-    JWT_SECRET="your-super-secret-key"
-
-    # API Key for Polka webhooks
-    POLKA_KEY="your-polka-api-key"
-
-    # Set to "dev" for development features like /admin/reset
-    PLATFORM="dev"
-    ```
-
-### 5. Run Database Migrations
-
-Apply the database schema to your newly created database.
+Run migrations and start the server:
 
 ```bash
 npm run migrate
+npm run dev          # http://localhost:8080
 ```
 
-## ⚙️ Development Scripts
+### Frontend
 
--   **`npm run dev`**: Starts the server in development mode using `nodemon`. The server will automatically restart whenever you make changes to the source code.
--   **`npm run build`**: Compiles the TypeScript code into JavaScript, outputting the result to the `dist/` directory.
--   **`npm run start`**: Starts the server from the compiled JavaScript code in the `dist/` directory. This is typically used for production.
--   **`npm run test`**: Runs the test suite using `vitest`.
+```bash
+cd frontend
+npm install
+npm run dev          # http://localhost:5173
+```
+
+The frontend is a static developer portal — it does **not** call the backend API. It serves as a landing page and documentation UI for the Chirpy project.
+
+---
+
+## ⚙️ Backend Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Build + start with nodemon (auto-restart) |
+| `npm run build` | Compile TypeScript → `dist/` |
+| `npm run start` | Run compiled JS from `dist/` |
+| `npm run test` | Run tests with Vitest |
+| `npm run generate` | Generate Drizzle migrations |
+| `npm run migrate` | Apply Drizzle migrations |
+
+---
 
 ## 📖 API Endpoints
 
-The API documentation is interactively served from the `openapi.yaml` file. Once the server is running, you can view and interact with all endpoints at:
+Interactive docs available at **http://localhost:8080/api-docs** when the backend is running.
 
-**http://localhost:8080/api-docs**
+| Method | Path | Description | Auth |
+|--------|------|-------------|------|
+| `GET` | `/api/healthz` | Health check | None |
+| `POST` | `/api/users` | Create user | None |
+| `PUT` | `/api/users` | Update user | JWT |
+| `POST` | `/api/login` | Login | None |
+| `POST` | `/api/refresh` | Refresh access token | JWT |
+| `POST` | `/api/revoke` | Revoke refresh token | JWT |
+| `GET` | `/api/chirps` | List chirps | None |
+| `POST` | `/api/chirps` | Create chirp | JWT |
+| `GET` | `/api/chirps/{id}` | Get chirp | None |
+| `DELETE` | `/api/chirps/{id}` | Delete chirp | JWT |
+| `POST` | `/api/polka/webhooks` | Polka webhook | API Key |
+| `GET` | `/admin/metrics` | Usage metrics | None |
+| `POST` | `/admin/reset` | Reset DB (dev only) | None |
 
-Here is a summary of the available endpoints:
+---
 
-| Method | Path                      | Description                                    | Authentication |
-| :----- | :------------------------ | :--------------------------------------------- | :------------- |
-| `GET`  | `/api/healthz`            | Checks the health of the API.                  | None           |
-| `POST` | `/api/users`              | Creates a new user.                            | None           |
-| `PUT`  | `/api/users`              | Updates the authenticated user's info.         | JWT Required   |
-| `POST` | `/api/login`              | Logs in a user and returns JWTs.               | None           |
-| `POST` | `/api/refresh`            | Issues a new access token using a refresh token. | JWT Required   |
-| `POST` | `/api/revoke`             | Revokes a refresh token.                       | JWT Required   |
-| `GET`  | `/api/chirps`             | Gets a list of all chirps.                     | None           |
-| `POST` | `/api/chirps`             | Creates a new chirp.                           | JWT Required   |
-| `GET`  | `/api/chirps/{chirpId}`   | Gets a single chirp by its ID.                 | None           |
-| `DELETE`| `/api/chirps/{chirpId}`  | Deletes a chirp.                               | JWT Required   |
-| `POST` | `/api/polka/webhooks`     | Handles webhooks from the Polka service.       | Polka API Key  |
-| `GET`  | `/admin/metrics`          | Displays an admin page with usage metrics.     | None           |
-| `POST` | `/admin/reset`            | Resets the database (dev mode only).           | None           |
+## 🖥️ Frontend Pages
+
+| Route | Page | Description |
+|-------|------|-------------|
+| `/` | Home | Project overview with hero and feature cards |
+| `/api` | API Overview | Lists all backend routes with method badges |
+| `/architecture` | Architecture | Request flow timeline |
+| `/status` | Status | Static health indicators |
+| `*` | 404 | Not Found page |
+
+---
+
+## Tech Stack
+
+**Backend:** Express · TypeScript · PostgreSQL · Drizzle ORM · JWT · Argon2
+
+**Frontend:** React · Vite · Tailwind CSS · React Router · TypeScript
