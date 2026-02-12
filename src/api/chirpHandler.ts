@@ -83,7 +83,18 @@ export async function getChirpsController(req: Request, res: Response){
         authorId = authorIdQuery;
     }
 
-    const chirps = await getAllChirps(authorId);
+    let sort: 'asc' | 'desc' | undefined;
+    const sortQuery = req.query.sort;
+
+    if(typeof sortQuery === "string"){
+        if(sortQuery === "asc" || sortQuery === "desc"){
+            sort = sortQuery;
+        }else {
+            return res.status(400).send("Invalid sort parameter, Must be 'asc' or 'desc'.")
+        }
+    }
+
+    const chirps = await getAllChirps(authorId, sort);
 
     const formattedChirps = chirps.map(chirp => ({
         id: chirp.id,

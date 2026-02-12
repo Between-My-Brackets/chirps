@@ -1,20 +1,21 @@
 import {db} from "../index.js";
 import {chirps, users} from "../schema.js";
-import {asc, eq, and, SQL} from "drizzle-orm";
+import {asc, eq, and, desc} from "drizzle-orm";
 
-export async function getAllChirps(authorId?: string){
+export async function getAllChirps(authorId?: string, sort?: "asc" | "desc"){
+    const orderBy = sort === "desc" ? desc(chirps.createdAt) : asc(chirps.createdAt);
     if (authorId) {
         const allChirps = await db
             .select()
             .from(chirps)
             .where(eq(chirps.userId, authorId))
-            .orderBy(asc(chirps.createdAt));
+            .orderBy(orderBy);
         return allChirps;
     } else {
         const allChirps = await db
             .select()
             .from(chirps)
-            .orderBy(asc(chirps.createdAt));
+            .orderBy(orderBy);
         return allChirps;
     }
 }
