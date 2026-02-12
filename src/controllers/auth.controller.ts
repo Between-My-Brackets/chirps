@@ -1,11 +1,12 @@
-// src/api/login.ts
 import type { Request, Response, NextFunction } from "express";
 import { getUserByEmail } from "../db/queries/users.queries.js";
-import { checkPasswordHash, makeJWT, makeRefreshToken } from "../auth.js";
+import { checkPasswordHash, makeJWT, makeRefreshToken, getBearerToken } from "../auth.js";
 import { Omit } from "utility-types";
 import { users } from "../db/schema.js";
 import { config } from "../config.js";
-import { storeRefreshToken } from "../db/queries/auth.queries.js";
+import { storeRefreshToken, getRefreshToken, revokeRefreshToken } from "../db/queries/auth.queries.js";
+import { UnauthorizedError } from "../errors/unauthorizedError.js";
+
 
 type loginRequestBody = {
 	email: string;
@@ -57,6 +58,33 @@ export async function loginController(req: Request, res: Response, next: NextFun
 			refreshToken: refreshToken,
 		};
 		res.status(200).json(userResponse);
+	} catch (err) {
+		next(err);
+	}
+}
+
+export async function refreshController(req: Request, res: Response, next: NextFunction) {
+	try {
+		const token = getBearerToken(req);
+		const dbToken = await getRefreshToken(token);
+
+		if (!dbToken || dbToken.revokedAt || new Date() > dbToken.expiresAt) {
+			throw new UnauthorizedError();
+		}
+
+		const newAccessToken = makeJWT(dbToken.userId, 3600, config.jwt.secret); // Expires in 1 hour
+
+		res.status(200).json({ token: newAccessToken });
+	} catch (err) {
+		next(err);
+	}
+}
+
+export async function revokeController(req: Request, res: Response, next: NextFunction) {
+	try {
+		const token = getBearerToken(req);
+		await revokeRefreshToken(token);
+		res.status(204).send();
 	} catch (err) {
 		next(err);
 	}
