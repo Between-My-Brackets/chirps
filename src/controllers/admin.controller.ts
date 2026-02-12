@@ -2,11 +2,6 @@ import type { Request, Response } from "express";
 import { config } from "../config.js";
 import { deleteAllUsers } from "../db/queries/users.queries.js";
 
-export async function healthReadiness (req: Request, res: Response){
-    res.set("Content-Type", "text/plain; charset=utf-8");
-    res.send("OK");
-}
-
 export async function handlerMetrics(_: Request, res: Response) {
     res.set("Content-Type", "text/html; charset=utf-8");
     res.send(`<html>
