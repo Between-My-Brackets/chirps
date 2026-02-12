@@ -3,7 +3,7 @@ import {CustomError} from "./customErrors.js";
 export class NotFoundError extends CustomError {
     statusCode = 404;
 
-    constructor() {
+    constructor(message?:string) {
         super("Not Found");
         Object.setPrototypeOf(this, NotFoundError.prototype);
     }

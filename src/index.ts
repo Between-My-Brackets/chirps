@@ -15,6 +15,7 @@ import {loginController} from "./api/login.js";
 import {refreshController} from "./api/refresh.js";
 import {revokeController} from "./api/revoke.js";
 import {authenticate} from "./middlewares/auth.js";
+import {polkaWebhookController} from "./api/polkaWebhooks.js";
 
 // const migrationClient = postgres(config.db.url, { max: 1});
 // await migrate(drizzle(migrationClient), config.db.migrationConfig);
@@ -34,6 +35,7 @@ app.put("/api/users", authenticate, updateUserController);
 app.post("/api/login", loginController);
 app.post("/api/refresh", refreshController);
 app.post("/api/revoke", revokeController);
+app.post("/api/polka/webhooks", polkaWebhookController)
 
 //==========admin routes============
 app.get("/admin/metrics", (req, res, next) => {

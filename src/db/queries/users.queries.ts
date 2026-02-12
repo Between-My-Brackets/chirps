@@ -46,7 +46,24 @@ export async function updateUserById(
             id: users.id,
             email: users.email,
             createdAt: users.createdAt,
-            updatedAt: users.updatedAt
+            updatedAt: users.updatedAt,
+            isChirpyRed: users.isChirpyRed
         });
+    return updatedUser;
+}
+
+export async function upgradeUserToChirpyRed(userId: string){
+    const [updatedUser] = await db
+        .update(users)
+        .set({
+            isChirpyRed: true,
+            updatedAt: new Date(),
+        })
+        .where(eq(users.id, userId))
+        .returning({
+            id: users.id,
+            email: users.email,
+            isChirpyRed: users.isChirpyRed
+        })
     return updatedUser;
 }

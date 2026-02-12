@@ -42,7 +42,8 @@ export async function createUserController(req: Request, res: Response){
                 id: createdUser.id,
                 createdAt: createdUser.createdAt,
                 updatedAt: createdUser.updatedAt,
-                email: createdUser.email
+                email: createdUser.email,
+                isChirpyRed: createdUser.isChirpyRed
             }
             res.status(201).json(userResponse);
         }else {
@@ -80,7 +81,8 @@ export async function updateUserController(req: Request, res: Response) {
                 id: updatedUser.id,
                 createdAt: updatedUser.createdAt,
                 updatedAt: updatedUser.updatedAt,
-                email: updatedUser.email
+                email: updatedUser.email,
+                isChirpyRed: updatedUser.isChirpyRed
             };
             res.status(200).json(userResponse); // Corrected this line
         } else {

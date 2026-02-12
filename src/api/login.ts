@@ -52,6 +52,7 @@ export async function loginController(req: Request, res: Response, next: NextFun
 			createdAt: user.createdAt,
 			updatedAt: user.updatedAt,
 			email: user.email,
+			isChirpyRed:user.isChirpyRed,
 			token: accessToken,
 			refreshToken: refreshToken,
 		};
