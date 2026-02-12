@@ -76,7 +76,14 @@ export async function createChirpController(req: Request, res:Response){
 }
 
 export async function getChirpsController(req: Request, res: Response){
-    const chirps = await getAllChirps();
+    let authorId: string | undefined;
+    const authorIdQuery = req.query.authorId;
+
+    if(typeof authorIdQuery === "string") {
+        authorId = authorIdQuery;
+    }
+
+    const chirps = await getAllChirps(authorId);
 
     const formattedChirps = chirps.map(chirp => ({
         id: chirp.id,

@@ -1,14 +1,22 @@
 import {db} from "../index.js";
 import {chirps, users} from "../schema.js";
-import {asc, eq, and} from "drizzle-orm";
+import {asc, eq, and, SQL} from "drizzle-orm";
 
-export async function getAllChirps(){
-    const allChirps = await db
-        .select()
-        .from(chirps)
-        .orderBy(asc(chirps.createdAt));
-
-    return allChirps;
+export async function getAllChirps(authorId?: string){
+    if (authorId) {
+        const allChirps = await db
+            .select()
+            .from(chirps)
+            .where(eq(chirps.userId, authorId))
+            .orderBy(asc(chirps.createdAt));
+        return allChirps;
+    } else {
+        const allChirps = await db
+            .select()
+            .from(chirps)
+            .orderBy(asc(chirps.createdAt));
+        return allChirps;
+    }
 }
 
 //the sql equivalent of the above is :
@@ -16,7 +24,7 @@ export async function getAllChirps(){
 // FROM chirps
 // ORDER BY created_at ASC;
 
-
+;
 export async function getChirpById(chirpId: string){
     const [chirp] = await db
         .select()
