@@ -84,6 +84,12 @@ app.delete("/api/chirps/:chirpId", authenticate, async(req, res, next) => { // A
 //=====================================================
 app.use(errorHandler);
 
+import swaggerUi from 'swagger-ui-express';
+import * as fs from 'fs';
+import * as yaml from 'js-yaml';
+
+const openApiDocument = yaml.load(fs.readFileSync('./openapi.yaml', 'utf8')) as Record<string, unknown>;
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiDocument));
 
 const startServer = () => {
     app.listen(PORT, () => {

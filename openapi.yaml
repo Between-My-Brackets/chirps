@@ -1,0 +1,99 @@
+openapi: 3.0.0
+info:
+  title: Chirpy API
+  version: 1.0.0
+  description: The backend API for the Chirpy microblogging platform.
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/chirps:
+    get:
+      summary: Retrieve a list of chirps
+      description: Retrieve a list of chirps. Can be filtered by authorId and sorted.
+      parameters:
+        - in: query
+          name: authorId
+          schema:
+            type: string
+          description: The ID of the author to filter by.
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [asc, desc]
+          description: The sort order for the chirps.
+      responses:
+        '200':
+          description: A list of chirps.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Chirp'
+        '400':
+          description: Invalid sort parameter.
+    post:
+      summary: Create a new chirp
+      description: Creates a new chirp for the authenticated user.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateChirpRequest'
+      responses:
+        '201':
+          description: The created chirp.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Chirp'
+        '400':
+          description: Bad request, for example, if the chirp body is missing or too long.
+        '401':
+          description: Unauthorized, for example, if the JWT is missing or invalid.
+components:
+  schemas:
+    Chirp:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The chirp ID.
+          example: 01H8X2J4C5K6B7J8A9D0E1F2G3
+        createdAt:
+          type: string
+          format: date-time
+          description: The date and time the chirp was created.
+          example: 2023-08-23T10:00:00Z
+        updatedAt:
+          type: string
+          format: date-time
+          description: The date and time the chirp was last updated.
+          example: 2023-08-23T10:00:00Z
+        body:
+          type: string
+          description: The content of the chirp.
+          example: Hello, world!
+        userId:
+          type: string
+          description: The ID of the user who created the chirp.
+          example: 01H8X2J4C5K6B7J8A9D0E1F2G3
+    CreateChirpRequest:
+      type: object
+      required:
+        - body
+      properties:
+        body:
+          type: string
+          description: The content of the chirp.
+          example: This is my first chirp!
+          maxLength: 140
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
