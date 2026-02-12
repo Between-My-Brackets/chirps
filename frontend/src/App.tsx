@@ -1,8 +1,9 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
-import Home from './pages/Home';
-import ApiOverview from './pages/ApiOverview';
-import Architecture from './pages/Architecture';
+import Feed from './pages/Feed';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Profile from './pages/Profile';
 import Status from './pages/Status';
 import NotFound from './pages/NotFound';
 
@@ -11,10 +12,11 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<MainLayout />}>
-          <Route index element={<Home />} />
-          <Route path="api" element={<ApiOverview />} />
-          <Route path="architecture" element={<Architecture />} />
-          <Route path="status" element={<Status />} />
+          <Route path="/" element={<Feed />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/status" element={<Status />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

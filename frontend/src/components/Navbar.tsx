@@ -1,15 +1,17 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from './AuthProvider';
 import ThemeToggle from './ThemeToggle';
-
-const navLinks = [
-  { to: '/', label: 'Home' },
-  { to: '/api', label: 'API Overview' },
-  { to: '/architecture', label: 'Architecture' },
-  { to: '/status', label: 'Status' },
-];
 
 export default function Navbar() {
   const { pathname } = useLocation();
+  const { isAuthenticated, user } = useAuth();
+
+  const linkClass = (to: string) =>
+    `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+      pathname === to
+        ? 'text-mongo-green bg-mongo-green/10'
+        : 'text-mongo-gray hover:text-mongo-white hover:bg-mongo-panel'
+    }`;
 
   return (
     <nav className="border-b border-mongo-border bg-mongo-black/80 backdrop-blur-sm sticky top-0 z-50">
@@ -22,24 +24,26 @@ export default function Navbar() {
           <span className="text-mongo-white font-bold text-lg">Chirpy</span>
         </Link>
 
-        {/* Links + toggle */}
+        {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-1">
-          <ul className="flex items-center gap-1">
-            {navLinks.map(({ to, label }) => (
-              <li key={to}>
-                <Link
-                  to={to}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    pathname === to
-                      ? 'text-mongo-green bg-mongo-green/10'
-                      : 'text-mongo-gray hover:text-mongo-white hover:bg-mongo-panel'
-                  }`}
-                >
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <Link to="/" className={linkClass('/')}>Feed</Link>
+          <Link to="/status" className={linkClass('/status')}>Status</Link>
+
+          {isAuthenticated ? (
+            <>
+              <Link to="/profile" className={linkClass('/profile')}>
+                Profile
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className={linkClass('/login')}>Login</Link>
+              <Link to="/register" className={linkClass('/register')}>
+                Register
+              </Link>
+            </>
+          )}
+
           <div className="ml-2">
             <ThemeToggle />
           </div>
@@ -66,20 +70,16 @@ export default function Navbar() {
       {/* Mobile menu */}
       <div id="mobile-menu" className="hidden md:hidden border-t border-mongo-border px-6 pb-4">
         <ul className="flex flex-col gap-1 pt-2">
-          {navLinks.map(({ to, label }) => (
-            <li key={to}>
-              <Link
-                to={to}
-                className={`block px-3 py-2 rounded-md text-sm font-medium ${
-                  pathname === to
-                    ? 'text-mongo-green bg-mongo-green/10'
-                    : 'text-mongo-gray hover:text-mongo-white hover:bg-mongo-panel'
-                }`}
-              >
-                {label}
-              </Link>
-            </li>
-          ))}
+          <li><Link to="/" className={`block ${linkClass('/')}`}>Feed</Link></li>
+          <li><Link to="/status" className={`block ${linkClass('/status')}`}>Status</Link></li>
+          {isAuthenticated ? (
+            <li><Link to="/profile" className={`block ${linkClass('/profile')}`}>Profile</Link></li>
+          ) : (
+            <>
+              <li><Link to="/login" className={`block ${linkClass('/login')}`}>Login</Link></li>
+              <li><Link to="/register" className={`block ${linkClass('/register')}`}>Register</Link></li>
+            </>
+          )}
         </ul>
       </div>
     </nav>
