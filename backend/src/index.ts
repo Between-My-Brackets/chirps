@@ -19,7 +19,14 @@ app.use(express.json());
 app.use("/app", middlewareMetricsInc, express.static("src/app"));
 
 // OpenAPI / Swagger Docs
-const openApiDocument = yaml.load(fs.readFileSync('./openapi.yaml', 'utf8')) as Record<string, unknown>;
+const openApiYaml = fs.readFileSync('./openapi.yaml', 'utf8');
+const openApiDocument = yaml.load(openApiYaml) as Record<string, unknown>;
+app.get('/api-docs.json', (req, res) => {
+    res.json(openApiDocument);
+});
+app.get('/api-docs.yaml', (req, res) => {
+    res.type('text/yaml').send(openApiYaml);
+});
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiDocument));
 
 // Routes

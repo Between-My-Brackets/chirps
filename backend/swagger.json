@@ -1,0 +1,598 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Chirpy API",
+        "version": "1.0.0",
+        "description": "The backend API for the Chirpy microblogging platform."
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8080"
+        }
+    ],
+    "paths": {
+        "/api/healthz": {
+            "get": {
+                "summary": "Health check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string",
+                                    "example": "OK"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/chirps": {
+            "get": {
+                "summary": "Retrieve a list of chirps",
+                "description": "Retrieve a list of chirps. Can be filtered by authorId and sorted.",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "authorId",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "The ID of the author to filter by."
+                    },
+                    {
+                        "in": "query",
+                        "name": "sort",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        },
+                        "description": "The sort order for the chirps."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of chirps.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Chirp"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid sort parameter."
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create a new chirp",
+                "description": "Creates a new chirp for the authenticated user.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateChirpRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "The created chirp.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Chirp"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request, for example, if the chirp body is missing or too long."
+                    },
+                    "401": {
+                        "description": "Unauthorized, for example, if the JWT is missing or invalid."
+                    }
+                }
+            }
+        },
+        "/api/chirps/{chirpId}": {
+            "get": {
+                "summary": "Retrieve a chirp by ID",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "chirpId",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "The chirp ID."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A chirp.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Chirp"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Chirp not found."
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete a chirp by ID",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "chirpId",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "The chirp ID."
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Deleted."
+                    },
+                    "401": {
+                        "description": "Unauthorized."
+                    },
+                    "403": {
+                        "description": "Forbidden."
+                    },
+                    "404": {
+                        "description": "Chirp not found."
+                    }
+                }
+            }
+        },
+        "/api/users": {
+            "post": {
+                "summary": "Create a user",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateUserRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "The created user.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Email and password are required."
+                    },
+                    "409": {
+                        "description": "User already exists."
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update the authenticated user",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateUserRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "The updated user.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Both email and password are required."
+                    },
+                    "401": {
+                        "description": "Unauthorized."
+                    }
+                }
+            }
+        },
+        "/api/login": {
+            "post": {
+                "summary": "Log in",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Email and password are required."
+                    },
+                    "401": {
+                        "description": "Incorrect email or password."
+                    }
+                }
+            }
+        },
+        "/api/refresh": {
+            "post": {
+                "summary": "Refresh access token",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "New access token.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RefreshResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized."
+                    }
+                }
+            }
+        },
+        "/api/revoke": {
+            "post": {
+                "summary": "Revoke refresh token",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Revoked."
+                    },
+                    "401": {
+                        "description": "Unauthorized."
+                    }
+                }
+            }
+        },
+        "/api/polka/webhooks": {
+            "post": {
+                "summary": "Polka webhook endpoint",
+                "security": [
+                    {
+                        "apiKeyAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PolkaWebhookEvent"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "Accepted (or ignored for non-upgrade events)."
+                    },
+                    "400": {
+                        "description": "Missing userId for user.upgraded event."
+                    },
+                    "401": {
+                        "description": "Unauthorized."
+                    },
+                    "404": {
+                        "description": "User not found."
+                    }
+                }
+            }
+        },
+        "/admin/metrics": {
+            "get": {
+                "summary": "Admin metrics page",
+                "responses": {
+                    "200": {
+                        "description": "HTML metrics page.",
+                        "content": {
+                            "text/html": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/reset": {
+            "post": {
+                "summary": "Reset metrics and delete all users (dev only)",
+                "responses": {
+                    "200": {
+                        "description": "Reset successful.",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Only available in development mode."
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Chirp": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "The chirp ID.",
+                        "example": "01H8X2J4C5K6B7J8A9D0E1F2G3"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "The date and time the chirp was created.",
+                        "example": "2023-08-23T10:00:00.000Z"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "The date and time the chirp was last updated.",
+                        "example": "2023-08-23T10:00:00.000Z"
+                    },
+                    "body": {
+                        "type": "string",
+                        "description": "The content of the chirp.",
+                        "example": "Hello, world!"
+                    },
+                    "userId": {
+                        "type": "string",
+                        "description": "The ID of the user who created the chirp.",
+                        "example": "01H8X2J4C5K6B7J8A9D0E1F2G3"
+                    }
+                }
+            },
+            "CreateChirpRequest": {
+                "type": "object",
+                "required": [
+                    "body"
+                ],
+                "properties": {
+                    "body": {
+                        "type": "string",
+                        "description": "The content of the chirp.",
+                        "example": "This is my first chirp!",
+                        "maxLength": 140
+                    }
+                }
+            },
+            "User": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "01H8X2J4C5K6B7J8A9D0E1F2G3"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-08-23T10:00:00.000Z"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-08-23T10:00:00.000Z"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "user@example.com"
+                    },
+                    "isChirpyRed": {
+                        "type": "boolean",
+                        "example": false
+                    }
+                }
+            },
+            "CreateUserRequest": {
+                "type": "object",
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "example": "user@example.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": "correctPassword123!"
+                    }
+                }
+            },
+            "UpdateUserRequest": {
+                "type": "object",
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "example": "user@example.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": "newPassword123!"
+                    }
+                }
+            },
+            "LoginRequest": {
+                "type": "object",
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "example": "user@example.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": "correctPassword123!"
+                    }
+                }
+            },
+            "LoginResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "isChirpyRed": {
+                        "type": "boolean"
+                    },
+                    "token": {
+                        "type": "string"
+                    },
+                    "refreshToken": {
+                        "type": "string"
+                    }
+                }
+            },
+            "RefreshResponse": {
+                "type": "object",
+                "properties": {
+                    "token": {
+                        "type": "string"
+                    }
+                }
+            },
+            "PolkaWebhookEvent": {
+                "type": "object",
+                "required": [
+                    "event",
+                    "data"
+                ],
+                "properties": {
+                    "event": {
+                        "type": "string",
+                        "example": "user.upgraded"
+                    },
+                    "data": {
+                        "type": "object",
+                        "required": [
+                            "userId"
+                        ],
+                        "properties": {
+                            "userId": {
+                                "type": "string",
+                                "example": "01H8X2J4C5K6B7J8A9D0E1F2G3"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            },
+            "apiKeyAuth": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "Authorization",
+                "description": "Use Authorization: ApiKey <YOUR_KEY>"
+            }
+        }
+    }
+}

@@ -9,7 +9,9 @@
     "dev": "npx tsc && nodemon dist/index.js",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "download:swagger": "curl -s http://localhost:8080/api-docs.yaml -o swagger.yaml",
+    "download:swagger:json": "curl -s http://localhost:8080/api-docs.json -o swagger.json"
   },
   "keywords": [],
   "author": "",
