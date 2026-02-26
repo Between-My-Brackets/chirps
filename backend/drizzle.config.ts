@@ -6,6 +6,6 @@ export default defineConfig({
     out: "src/db/migrations",
     dialect: "postgresql",
     dbCredentials: {
-        url: "postgres://postgres:postgres@localhost:5432/chirpy?sslmode=disable",
+        url: "postgresql://neondb_owner:npg_9PgSlJseb4Ad@ep-steep-term-a17quiij-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
     },
 });
