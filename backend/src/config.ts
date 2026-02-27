@@ -1,6 +1,5 @@
 import {MigrationConfig} from "drizzle-orm/migrator";
-import 'dotenv/config';
-process.loadEnvFile();
+import "dotenv/config";
 
 
 function envOrThrow(key: string): string{
